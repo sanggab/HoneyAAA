@@ -36,6 +36,10 @@ final class ChatRoomViewModel: ObservableObject {
         do {
             let fetched = try await repository.fetchMessages(threadId: threadId)
             messages = fetched.map { $0.toUIModel() }
+            
+            let resends: [ChatMessage] = try repository.fetchResendMessage(threadId: threadId)
+            let cv: [ChatMessageUIModel] = resends.map { $0.toUIModel() }
+            messages.append(contentsOf: cv)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -51,7 +55,7 @@ final class ChatRoomViewModel: ObservableObject {
             messages.append(sent.toUIModel())
         } catch {
             errorMessage = error.localizedDescription
-            if let resendMsg: ChatMessage = try? repository.getResendMessage(threadId: threadId).last {
+            if let resendMsg: ChatMessage = try? repository.fetchResendMessage(threadId: threadId).last {
                 messages.append(resendMsg.toUIModel())
             }
         }
@@ -65,7 +69,7 @@ final class ChatRoomViewModel: ObservableObject {
             messages.append(sent.toUIModel())
         } catch {
             errorMessage = error.localizedDescription
-            if let resendMsg: ChatMessage = try? repository.getResendMessage(threadId: threadId).last {
+            if let resendMsg: ChatMessage = try? repository.fetchResendMessage(threadId: threadId).last {
                 messages.append(resendMsg.toUIModel())
             }
         }
@@ -76,7 +80,7 @@ final class ChatRoomViewModel: ObservableObject {
             try await repository.sendFailedMessage(threadId: threadId, text: "재전송 케이스 추가")
         } catch {
             errorMessage = error.localizedDescription
-            if let resendMsg: ChatMessage = try? repository.getResendMessage(threadId: threadId).last {
+            if let resendMsg: ChatMessage = try? repository.fetchResendMessage(threadId: threadId).last {
                 messages.append(resendMsg.toUIModel())
             }
         }

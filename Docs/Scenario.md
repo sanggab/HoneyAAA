@@ -13,8 +13,32 @@
 - Presentation: `ChatMessageUIModel`에 'isRead' 추가
 
 ## 시나리오 3: 전송에 실패한 채팅 메세지를 로컬에 저장하고, 재전송 하는 기능 추가
-- Data: 1) `APIClient`의 `/chats/` Path에 `/chats/resend` EndPoint 추가 (무조건 MockError/resend 떨굼)
-        2) `RemoteChatMessageRepository`에 `sendMessage`의 파라미터 `text`가 재전송 혹은 resend일 경우 `/chats/resend` 콜 하도록 시작
-        3) 실패 메시지 로컬 저장을 위한 인터페이스 `LocalChatMessageRepository`및 구현부 `LocalChatRepositories` 추가
-        4) `ChatMessage`에 isFailed 추가
-        5) 
+- **Data Layer**
+    1) `APIClient`의 `/chats` Path에 `/chats/resend` EndPoint 추가 (Test를 위해 무조건 Error 발생)
+    2) `RemoteChatMessageRepository`의 `sendMessage` 로직 수정: 메시지 내용이 "resend"일 경우 `/chats/resend` API 호출하여 실패 유도
+    3) 실패한 메시지 관리를 위한 `LocalChatMessageRepository` 인터페이스 및 `LocalChatRepositories` 구현체 추가 (UserDefaults 기반)
+        - `saveFailedMessage(threadId, message)`
+        - `fetchFailedMessages(threadId)`
+        - `removeFailedMessage(threadId, messageId)`
+
+- **Model Layer**
+    1) `ChatMessage` 모델에 `isFailed: Bool` 프로퍼티 추가
+
+- **Presentation Layer**
+    1) `ChatRoomViewModel` 수정
+        - `sendMessage`: 전송 실패 시 `LocalRepository`에 저장하고 UI 상태 업데이트 (isFailed = true)
+        - `resend(message)`: 재전송 로직 구현 (성공 시 Local에서 삭제)
+        - `load`: `LocalRepository`에서 실패한 메시지들을 불러와 채팅 목록에 병합 표시
+    2) `ChatRoomView` 수정
+        - 메시지 UI에 `isFailed` 상태에 따른 "재전송" 버튼 표시
+        ```swift
+        if message.isFailed {
+            Button {
+                Task { await viewModel.resend(message: message) }
+            } label: {
+                Text("재전송")
+                    .font(.caption)
+                    .foregroundColor(.red)
+            }
+        }
+        ```

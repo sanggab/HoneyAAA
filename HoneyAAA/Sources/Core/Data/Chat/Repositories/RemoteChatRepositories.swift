@@ -98,7 +98,7 @@ public final class RemoteChatMessageRepository: ChatMessageRepository {
         }
     }
     
-    public func getResendMessage(threadId: String) throws -> [ChatMessage] {
+    public func fetchResendMessage(threadId: String) throws -> [ChatMessage] {
         let data: [Data] = self.local.fetchResendMessages(threadId)
         
         let decoded: [ChatMessage] = try data.map { try JSONDecoder().decode(ChatMessage.self, from: $0) }
