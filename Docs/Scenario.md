@@ -13,3 +13,8 @@
 - Presentation: `ChatMessageUIModel`에 'isRead' 추가
 
 ## 시나리오 3: 전송에 실패한 채팅 메세지를 로컬에 저장하고, 재전송 하는 기능 추가
+- Data: 1) `APIClient`의 `/chats/` Path에 `/chats/resend` EndPoint 추가 (무조건 MockError/resend 떨굼)
+        2) `RemoteChatMessageRepository`에 `sendMessage`의 파라미터 `text`가 재전송 혹은 resend일 경우 `/chats/resend` 콜 하도록 시작
+        3) 실패 메시지 로컬 저장을 위한 인터페이스 `LocalChatMessageRepository`및 구현부 `LocalChatRepositories` 추가
+        4) `ChatMessage`에 isFailed 추가
+        5) 

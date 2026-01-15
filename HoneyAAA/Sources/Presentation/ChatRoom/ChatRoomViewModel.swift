@@ -51,7 +51,34 @@ final class ChatRoomViewModel: ObservableObject {
             messages.append(sent.toUIModel())
         } catch {
             errorMessage = error.localizedDescription
-            print("상갑 logEvent \(#function) errorMessage \(errorMessage)")
+            if let resendMsg: ChatMessage = try? repository.getResendMessage(threadId: threadId).last {
+                messages.append(resendMsg.toUIModel())
+            }
+        }
+    }
+    
+    func resend(message: ChatMessageUIModel) async {
+        do {
+            let sent = try await repository.sendResendmessage(threadId: threadId, text: message.text, id: message.id)
+            
+            messages.removeAll(where: { $0 == message })
+            messages.append(sent.toUIModel())
+        } catch {
+            errorMessage = error.localizedDescription
+            if let resendMsg: ChatMessage = try? repository.getResendMessage(threadId: threadId).last {
+                messages.append(resendMsg.toUIModel())
+            }
+        }
+    }
+    
+    func mockMessage() async {
+        do {
+            try await repository.sendFailedMessage(threadId: threadId, text: "재전송 케이스 추가")
+        } catch {
+            errorMessage = error.localizedDescription
+            if let resendMsg: ChatMessage = try? repository.getResendMessage(threadId: threadId).last {
+                messages.append(resendMsg.toUIModel())
+            }
         }
     }
 }

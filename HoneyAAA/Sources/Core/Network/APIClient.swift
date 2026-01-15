@@ -85,8 +85,18 @@ public final class MockAPIClient: APIClient {
 
         case _ where endpoint.path.hasPrefix("/chats/messages/"):
             let messages = [
-                ChatMessageDTO(id: "m1", text: "안녕하세요!", isMine: false, sentAt: Date()),
-                ChatMessageDTO(id: "m2", text: "반가워요 :)", isMine: true, sentAt: Date()),
+                ChatMessageDTO(
+                    id: "m1",
+                    text: "안녕하세요!",
+                    isMine: false,
+                    sentAt: Date()
+                ),
+                ChatMessageDTO(
+                    id: "m2",
+                    text: "반가워요 :)",
+                    isMine: true,
+                    sentAt: Date()
+                ),
             ]
             data = try encoder.encode(messages)
 
@@ -103,6 +113,8 @@ public final class MockAPIClient: APIClient {
             print("상갑 logEvent \(#function) message \(message)")
             data = try encoder.encode(message)
             print("상갑 logEvent \(#function) data \(data)")
+        case "/chats/resend":
+            throw MockError.resend
         case "/user/profile":
             let profile = UserProfileDTO(
                 id: "me",
@@ -122,3 +134,15 @@ public final class MockAPIClient: APIClient {
     }
 }
 
+public enum MockError: Error {
+    case resend
+}
+
+extension MockError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .resend:
+            return "resend error"
+        }
+    }
+}
