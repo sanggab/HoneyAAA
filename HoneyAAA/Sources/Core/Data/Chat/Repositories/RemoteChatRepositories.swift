@@ -99,11 +99,18 @@ public final class RemoteChatMessageRepository: ChatMessageRepository {
     }
     
     public func fetchResendMessage(threadId: String) throws -> [ChatMessage] {
-        let data: [Data] = self.local.fetchResendMessages(threadId)
-        
-        let decoded: [ChatMessage] = try data.map { try JSONDecoder().decode(ChatMessage.self, from: $0) }
-        
-        return decoded
+        return local.fetchResendMessages(threadId)
+    }
+    
+    public func sendFailedMessage(_ threadId: String, text: String, id: String) {
+        let message = ChatMessage(
+            id: id,
+            text: text,
+            isMine: true,
+            sentAt: Date(),
+            isFailed: true
+        )
+        try? local.saveResendMessage(threadId, message: message)
     }
 }
 
@@ -118,7 +125,6 @@ extension RemoteChatMessageRepository {
             isFailed: true
         )
         
-        let encoded: Data = try JSONEncoder().encode(resendMsg)
-        try self.local.saveResendMessage(threadId, data: encoded)
+        try self.local.saveResendMessage(threadId, message: resendMsg)
     }
 }
