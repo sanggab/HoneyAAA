@@ -6,7 +6,6 @@ struct ChatMessageUIModel: Identifiable, Equatable {
     let text: String
     let isMine: Bool
     let timeText: String
-    let isFailed: Bool
 }
 
 extension ChatMessage {
@@ -17,8 +16,7 @@ extension ChatMessage {
             id: id,
             text: text,
             isMine: isMine,
-            timeText: formatter.string(from: sentAt),
-            isFailed: isFailed
+            timeText: formatter.string(from: sentAt)
         )
     }
 }

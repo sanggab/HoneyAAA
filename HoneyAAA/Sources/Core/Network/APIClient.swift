@@ -113,8 +113,6 @@ public final class MockAPIClient: APIClient {
             print("상갑 logEvent \(#function) message \(message)")
             data = try encoder.encode(message)
             print("상갑 logEvent \(#function) data \(data)")
-        case "/chats/resend":
-            throw MockError.resend
         case "/user/profile":
             let profile = UserProfileDTO(
                 id: "me",
@@ -131,18 +129,5 @@ public final class MockAPIClient: APIClient {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         return try decoder.decode(T.self, from: data)
-    }
-}
-
-public enum MockError: Error {
-    case resend
-}
-
-extension MockError: LocalizedError {
-    public var errorDescription: String? {
-        switch self {
-        case .resend:
-            return "resend error"
-        }
     }
 }

@@ -36,10 +36,6 @@ final class ChatRoomViewModel: ObservableObject {
         do {
             let fetched = try await repository.fetchMessages(threadId: threadId)
             messages = fetched.map { $0.toUIModel() }
-            
-            let resends: [ChatMessage] = try repository.fetchResendMessage(threadId: threadId)
-            let cv: [ChatMessageUIModel] = resends.map { $0.toUIModel() }
-            messages.append(contentsOf: cv)
         } catch {
             errorMessage = error.localizedDescription
         }
@@ -55,34 +51,6 @@ final class ChatRoomViewModel: ObservableObject {
             messages.append(sent.toUIModel())
         } catch {
             errorMessage = error.localizedDescription
-            if let resendMsg: ChatMessage = try? repository.fetchResendMessage(threadId: threadId).last {
-                messages.append(resendMsg.toUIModel())
-            }
-        }
-    }
-    
-    func resend(message: ChatMessageUIModel) async {
-        do {
-            let sent = try await repository.sendResendmessage(threadId: threadId, text: message.text, id: message.id)
-            
-            messages.removeAll(where: { $0 == message })
-            messages.append(sent.toUIModel())
-        } catch {
-            errorMessage = error.localizedDescription
-            if let resendMsg: ChatMessage = try? repository.fetchResendMessage(threadId: threadId).last {
-                messages.append(resendMsg.toUIModel())
-            }
-        }
-    }
-    
-    func mockMessage() async {
-        do {
-            try await repository.sendFailedMessage(threadId: threadId, text: "재전송 케이스 추가")
-        } catch {
-            errorMessage = error.localizedDescription
-            if let resendMsg: ChatMessage = try? repository.fetchResendMessage(threadId: threadId).last {
-                messages.append(resendMsg.toUIModel())
-            }
         }
     }
 }

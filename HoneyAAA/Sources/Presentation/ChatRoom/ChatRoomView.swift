@@ -43,14 +43,6 @@ struct ChatRoomView: View {
                         HStack(alignment: .bottom) {
                             if message.isMine { Spacer() }
                             
-                            if message.isFailed {
-                                Button {
-                                    Task { await viewModel.resend(message: message) }
-                                } label: {
-                                    Text("재전송")
-                                }
-                            }
-                            
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(message.text)
                                     .padding(10)
@@ -78,8 +70,6 @@ struct ChatRoomView: View {
 
     private var inputArea: some View {
         HStack {
-            resendBtn
-            
             TextField("메시지를 입력하세요", text: $viewModel.inputText)
                 .textFieldStyle(.roundedBorder)
             
@@ -90,14 +80,6 @@ struct ChatRoomView: View {
         }
         .padding()
         .background(Color(.systemBackground))
-    }
-    
-    private var resendBtn: some View {
-        Button {
-            Task { await viewModel.mockMessage() }
-        } label: {
-            Text("재전송")
-        }
     }
 }
 

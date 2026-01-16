@@ -9,9 +9,5 @@ public protocol ChatThreadRepository {
 public protocol ChatMessageRepository {
     func fetchMessages(threadId: String) async throws -> [ChatMessage]
     func sendMessage(threadId: String, text: String) async throws -> ChatMessage
-    func fetchResendMessage(threadId: String) throws -> [ChatMessage]
-    /// 시나리오 테스트용
-    func sendFailedMessage(threadId: String, text: String) async throws
-    func sendResendmessage(threadId: String, text: String, id: String) async throws -> ChatMessage
 }
 

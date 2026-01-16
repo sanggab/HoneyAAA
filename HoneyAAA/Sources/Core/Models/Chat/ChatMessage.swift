@@ -6,20 +6,17 @@ public struct ChatMessage: Identifiable, Equatable, Codable {
     public let text: String
     public let isMine: Bool
     public let sentAt: Date
-    public let isFailed: Bool
 
     public init(
         id: String,
         text: String,
         isMine: Bool,
-        sentAt: Date,
-        isFailed: Bool = false
+        sentAt: Date
     ) {
         self.id = id
         self.text = text
         self.isMine = isMine
         self.sentAt = sentAt
-        self.isFailed = isFailed
     }
 }
 
