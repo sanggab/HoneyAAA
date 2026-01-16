@@ -1,5 +1,20 @@
 import Foundation
 
+/// 채팅 스레드 리스트를 제공하는 레포지토리입니다.
+public protocol ChatThreadRepository {
+    func fetchThreads() async throws -> [ChatThread]
+}
+
+/// 채팅방 메시지 목록을 제공하는 레포지토리입니다.
+public protocol RemoteChatMessageRepository {
+    func fetchMessages(threadId: String) async throws -> [ChatMessage]
+    func sendMessage(threadId: String, text: String) async throws -> ChatMessage
+    func fetchResendMessage(threadId: String) throws -> [ChatMessage]
+    /// 시나리오 테스트용
+    func sendFailedMessage(threadId: String, text: String) async throws
+    func sendResendmessage(threadId: String, text: String, id: String) async throws -> ChatMessage
+}
+
 /// 채팅 스레드/메시지 레포지토리의 원격 구현체입니다.
 public final class RemoteChatThreadRepository: ChatThreadRepository {
     private let apiClient: APIClient
@@ -14,7 +29,7 @@ public final class RemoteChatThreadRepository: ChatThreadRepository {
     }
 }
 
-public final class RemoteChatMessageRepository: ChatMessageRepository {
+public final class RemoteChatMessageRepositoryImpl: RemoteChatMessageRepository {
     private let apiClient: APIClient
     
     private let local: LocalChatMessageRepository = LocalChatRepositories()
@@ -115,7 +130,7 @@ public final class RemoteChatMessageRepository: ChatMessageRepository {
 }
 
 
-extension RemoteChatMessageRepository {
+extension RemoteChatMessageRepositoryImpl {
     func saveResendMessage(threadId: String, text: String) throws {
         let resendMsg: ChatMessage = .init(
             id: UUID().uuidString,
