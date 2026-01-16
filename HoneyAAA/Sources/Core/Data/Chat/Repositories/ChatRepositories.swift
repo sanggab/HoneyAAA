@@ -15,7 +15,7 @@ public struct DefaultChatRepository: ChatRepository {
     private let remote: RemoteChatMessageRepository
     private let local: LocalChatMessageRepository
     
-    init(
+    public init(
         local: LocalChatMessageRepository,
         remote: RemoteChatMessageRepository
     ) {
