@@ -15,7 +15,7 @@ public protocol LocalChatMessageRepository {
     func isResendMessageAvailable(_ threadId: String) -> Bool
 }
 
-public struct LocalChatRepositories: LocalChatMessageRepository {
+public struct LocalChatRepositoryImpl: LocalChatMessageRepository {
     public init() { }
     
     public func fetchResendMessages(_ threadId: String) -> [ChatMessage] {
